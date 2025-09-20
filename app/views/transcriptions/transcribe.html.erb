@@ -1,0 +1,103 @@
+<div class="transcription-app" data-controller="voice-recorder">
+  <div class="container">
+    <h1>🎤 Voice Transcription & Summarization</h1>
+    <p class="subtitle">Record your voice and get instant transcription with AI-powered summaries</p>
+    
+    <div class="recording-controls">
+      <button 
+        data-voice-recorder-target="startBtn" 
+        data-action="click->voice-recorder#startRecording"
+        class="btn btn-start">
+        🎤 Start Listening
+      </button>
+      
+      <button 
+        data-voice-recorder-target="stopBtn" 
+        data-action="click->voice-recorder#stopRecording"
+        class="btn btn-stop" 
+        disabled>
+        ⏹️ Stop Listening
+      </button>
+      
+      <div class="recording-status" data-voice-recorder-target="status">
+        Ready to record
+      </div>
+    </div>
+
+    <div class="transcription-section">
+      <h2>Live Transcription:</h2>
+      <div 
+        class="live-transcription" 
+        data-voice-recorder-target="liveTranscription">
+        <p class="placeholder">Click "Start Listening" to begin transcription...</p>
+      </div>
+    </div>
+
+    <div class="results-section" data-voice-recorder-target="resultsSection" style="display: none;">
+      <h2>Final Transcription:</h2>
+      <div class="final-transcription" data-voice-recorder-target="finalTranscription"></div>
+      
+      <button 
+        data-voice-recorder-target="summaryBtn"
+        data-action="click->voice-recorder#generateSummary"
+        class="btn btn-summary">
+        ✨ Generate Summary
+      </button>
+      
+      <div class="summary-section" data-voice-recorder-target="summarySection" style="display: none;">
+        <h2>📝 Summary:</h2>
+        <div class="summary-content" data-voice-recorder-target="summaryContent"></div>
+      </div>
+      
+      <div class="actions">
+        <button 
+          data-action="click->voice-recorder#copyTranscription"
+          class="btn btn-copy">
+          📋 Copy Transcription
+        </button>
+        <button 
+          data-action="click->voice-recorder#newRecording"
+          class="btn btn-new">
+          🔄 New Recording
+        </button>
+        <%= link_to "📚 View History", root_path, class: "btn btn-view" %>
+      </div>
+    </div>
+
+    <div class="error-message" data-voice-recorder-target="errorMessage" style="display: none;"></div>
+    
+    <div class="loading" data-voice-recorder-target="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>Processing audio with AssemblyAI...</p>
+    </div>
+
+    <div class="info-section">
+      <h3>📋 How it works:</h3>
+      <ol class="steps">
+        <li><strong>Click "Start Listening"</strong> - Grant microphone permission</li>
+        <li><strong>Speak clearly</strong> - Your words appear in real-time</li>
+        <li><strong>Click "Stop Listening"</strong> - Audio is sent to AssemblyAI for processing</li>
+        <li><strong>Get Results</strong> - View transcription and generate AI summary</li>
+      </ol>
+      
+      <div class="features">
+        <div class="feature">
+          <span class="feature-icon">🎯</span>
+          <span>High Accuracy</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">👥</span>
+          <span>Speaker Detection</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">🤖</span>
+          <span>AI Summaries</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">⚡</span>
+          <span>Real-time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

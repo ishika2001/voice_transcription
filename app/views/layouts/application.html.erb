@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Voice Transcription App</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <%= link_to "🎤 Voice Transcription", root_path, class: "nav-brand" %>
+        <div class="nav-links">
+          <%= link_to "📚 History", root_path, class: "nav-link #{'active' if current_page?(root_path)}" %>
+          <%= link_to "🎤 New Recording", transcribe_path, class: "nav-link #{'active' if current_page?(transcribe_path)}" %>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <% flash.each do |type, message| %>
+        <div class="alert alert-<%= type == 'notice' ? 'success' : 'danger' %>">
+          <div class="container">
+            <%= message %>
+          </div>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Voice Transcription App. Powered by AssemblyAI.</p>
+        <p class="footer-links">
+          <a href="https://www.assemblyai.com/" target="_blank">AssemblyAI</a> • 
+          <a href="https://rubyonrails.org/" target="_blank">Ruby on Rails</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

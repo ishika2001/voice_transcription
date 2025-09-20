@@ -1,0 +1,135 @@
+<div class="container">
+  <div class="header">
+    <h1>📚 Voice Transcription History</h1>
+    <div class="header-actions">
+      <%= link_to "🎤 New Transcription", transcribe_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <% if @transcriptions.any? %>
+    <div class="stats">
+      <div class="stat-card">
+        <span class="stat-number"><%= @transcriptions.count %></span>
+        <span class="stat-label">Total Transcriptions</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number"><%= @transcriptions.where.not(summary: [nil, ""]).count %></span>
+        <span class="stat-label">With Summaries</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number"><%= @transcriptions.sum { |t| t.content.to_s.split.length } %></span>
+        <span class="stat-label">Total Words</span>
+      </div>
+    </div>
+
+    <div class="transcriptions-list">
+      <% @transcriptions.each do |transcription| %>
+        <div class="transcription-card">
+          <div class="transcription-header">
+            <div class="transcription-meta">
+              <span class="date">
+                📅 <%= transcription.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </span>
+              <% if transcription.audio_file_name %>
+                <span class="filename">
+                  🎵 <%= transcription.audio_file_name %>
+                </span>
+              <% end %>
+            </div>
+            <%= link_to "🗑️ Delete", transcription_path(transcription), 
+                method: :delete, 
+                confirm: "Are you sure you want to delete this transcription?", 
+                class: "btn btn-delete" %>
+          </div>
+          
+          <div class="transcription-content">
+            <h3>📝 Transcription:</h3>
+            <p class="transcription-text"><%= truncate(transcription.content, length: 300) %></p>
+            
+            <% if transcription.has_summary? %>
+              <h4>✨ Summary:</h4>
+              <p class="summary"><%= transcription.summary %></p>
+            <% else %>
+              <p class="no-summary">No summary generated yet</p>
+            <% end %>
+          </div>
+          
+          <div class="transcription-actions">
+            <%= link_to "👁️ View Full", transcription_path(transcription), 
+                class: "btn btn-view", 
+                target: "_blank" %>
+            
+            <% unless transcription.has_summary? %>
+              <button class="btn btn-summary generate-summary-btn" 
+                      data-transcription-id="<%= transcription.id %>">
+                ✨ Generate Summary
+              </button>
+            <% end %>
+            
+            <button class="btn btn-copy copy-text-btn" 
+                    data-text="<%= transcription.content %>">
+              📋 Copy Text
+            </button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-icon">🎤</div>
+      <h2>No transcriptions yet</h2>
+      <p>Start by creating your first voice transcription!</p>
+      <%= link_to "🎤 Start Transcribing", transcribe_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+// Handle summary generation for existing transcriptions
+document.addEventListener('DOMContentLoaded', function() {
+  // Generate summary buttons
+  document.querySelectorAll('.generate-summary-btn').forEach(button => {
+    button.addEventListener('click', async function() {
+      const transcriptionId = this.dataset.transcriptionId;
+      const originalText = this.textContent;
+      
+      this.disabled = true;
+      this.textContent = '⏳ Generating...';
+      
+      try {
+        const response = await fetch(`/transcriptions/${transcriptionId}/summary`);
+        const data = await response.json();
+        
+        if (data.summary) {
+          // Reload the page to show the new summary
+          location.reload();
+        } else {
+          alert('Failed to generate summary: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to generate summary. Please try again.');
+      } finally {
+        this.disabled = false;
+        this.textContent = originalText;
+      }
+    });
+  });
+  
+  // Copy text buttons
+  document.querySelectorAll('.copy-text-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const text = this.dataset.text;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = this.textContent;
+        this.textContent = '✅ Copied!';
+        setTimeout(() => {
+          this.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    });
+  });
+});
+</script>
