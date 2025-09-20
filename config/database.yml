@@ -24,5 +24,21 @@ test:
   # port: 5432
 
 production:
-  <<: *default
-  url: <%= ENV['DATABASE_URL'] %>
+  primary: &primary_production
+    <<: *default
+    url: <%= ENV['PRIMARY_DATABASE_URL'] %> # main DB URL
+
+  cache:
+    <<: *primary_production
+    url: <%= ENV['CACHE_DATABASE_URL'] || ENV['PRIMARY_DATABASE_URL'] %> # fallback to primary if not separate
+    migrations_paths: db/cache_migrate
+
+  queue:
+    <<: *primary_production
+    url: <%= ENV['QUEUE_DATABASE_URL'] || ENV['PRIMARY_DATABASE_URL'] %>
+    migrations_paths: db/queue_migrate
+
+  cable:
+    <<: *primary_production
+    url: <%= ENV['CABLE_DATABASE_URL'] || ENV['PRIMARY_DATABASE_URL'] %>
+    migrations_paths: db/cable_migrate
